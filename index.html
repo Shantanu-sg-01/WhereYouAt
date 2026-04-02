@@ -1,40 +1,60 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Presence & Context System (PCS)</title>
+  <title>Where You At?</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background: #f5f7fa;
+      font-family: "Georgia", serif;
+      background: #f4f6f8;
       margin: 0;
-      padding: 20px;
+      padding: 30px;
       text-align: center;
     }
 
     .card {
-      max-width: 500px;
+      max-width: 600px;
       margin: auto;
       background: white;
-      padding: 25px;
-      border-radius: 10px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.08);
     }
 
     h1 {
-      margin-bottom: 10px;
+      margin-bottom: 5px;
+      font-size: 28px;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 20px;
+    }
+
+    .note {
+      font-size: 13px;
+      color: #888;
+      margin-bottom: 25px;
+      font-style: italic;
     }
 
     .label {
       font-weight: bold;
       margin-top: 20px;
-      color: #555;
+      color: #444;
     }
 
     .value {
       font-size: 20px;
       margin-top: 5px;
+    }
+
+    .footer {
+      margin-top: 25px;
+      font-size: 12px;
+      color: #999;
     }
   </style>
 </head>
@@ -42,17 +62,28 @@
 <body>
 
 <div class="card">
-  <h1>Presence & Context System</h1>
-  <p>Real-time availability interface</p>
+  <h1>Where You At?</h1>
 
-  <div class="label">📍 Current Location</div>
+  <div class="subtitle">
+    A real-time interface for monitoring the spatial and contextual status of Shantanu S. Gulawani.
+  </div>
+
+  <div class="note">
+    While every effort is made toward accuracy, deviations from reality may occur. Interpret accordingly.
+  </div>
+
+  <div class="label">Current Location</div>
   <div class="value" id="location">Loading...</div>
 
-  <div class="label">📝 Status</div>
-  <div class="value" id="note">Loading...</div>
+  <div class="label">Status</div>
+  <div class="value" id="noteField">Loading...</div>
 
-  <div class="label">⏰ Next Available</div>
+  <div class="label">Next Available</div>
   <div class="value" id="next">Loading...</div>
+
+  <div class="footer">
+    Last Updated: <span id="time">Loading...</span>
+  </div>
 </div>
 
 <script type="module">
@@ -60,20 +91,28 @@
   import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-database.js";
 
   const app = initializeApp({
-    databaseURL: "https://whereyouat-a7f74-default-rtdb.firebaseio.com/"
+    databaseURL: "https://YOUR-PROJECT-ID.firebaseio.com"
   });
 
   const db = getDatabase(app);
   const locationRef = ref(db, "current");
 
+  function formatTime(ts) {
+    if (!ts) return "-";
+    const date = new Date(ts);
+    return date.toLocaleString(); // auto formats nicely
+  }
+
   onValue(locationRef, (snapshot) => {
     const data = snapshot.val();
-
     if (!data) return;
 
     document.getElementById("location").innerText = data.location || "-";
-    document.getElementById("note").innerText = data.note || "-";
+    document.getElementById("noteField").innerText = data.note || "-";
     document.getElementById("next").innerText = data.nextAvailable || "-";
+
+    // 👇 THIS USES YOUR FIRST COLUMN (timestamp)
+    document.getElementById("time").innerText = formatTime(data.timestamp);
   });
 </script>
 
